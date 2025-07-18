@@ -2,9 +2,9 @@
 *Autor: Racquel Marques Lara de Almeida
 *Aluno: 025
 *Data: 09/05/2025
-*DescriÁ„o: aula pr·tica, construÁ„o de calculadora
+*Descri√ß√£o: aula pr√°tica, constru√ß√£o de calculadora
 *Contato: racquellara.nutri@gmail.com
-* TransaÁ„o: ZIMC_025
+* Transa√ß√£o: ZIMC_025
 
 
 REPORT ZREPO_IMC_ALUNO025.
@@ -12,8 +12,8 @@ REPORT ZREPO_IMC_ALUNO025.
 DATA: gv_racquel TYPE p DECIMALS 2,
       op_texto  TYPE string.
 
-CONSTANTS:                        "Fiz uma nova vari·vel para conseguir mostrar a o resultado por mensagem e tela.
-      gv_baixo TYPE p DECIMALS 2 VALUE '18.4',       " Tive que fazer vari·veis para cada valor m·x de IMC, porque o cÛdigo n„o aceita nem ponto e nem vÌrgula.
+CONSTANTS:                        "Fiz uma nova vari√°vel para conseguir mostrar a o resultado por mensagem e tela.
+      gv_baixo TYPE p DECIMALS 2 VALUE '18.4',       " Tive que fazer vari√°veis para cada valor m√°x de IMC, porque o c√≥digo n√£o aceita nem ponto e nem v√≠rgula.
       gv_normal TYPE p DECIMALS 2 VALUE '24.9',
       gv_sobre TYPE p DECIMALS 2 VALUE '29.9',
       gv_graui TYPE p DECIMALS 2 VALUE '34.9',
@@ -41,30 +41,25 @@ START-OF-SELECTION.
       PERFORM calcula_imc.
 
       IF gv_racquel <= gv_baixo.
-         op_texto = |Seu IMC …: { gv_racquel } - Abaixo do peso|.
+         op_texto = |Seu IMC √â: { gv_racquel } - Abaixo do peso|.
 
       ELSEIF gv_racquel > gv_baixo AND gv_racquel <= gv_normal.
-        op_texto = |Seu IMC …: { gv_racquel } - Peso normal|.
+        op_texto = |Seu IMC √â: { gv_racquel } - Peso normal|.
 
       ELSEIF gv_racquel > gv_normal AND gv_racquel <= gv_sobre.
-       op_texto = |Seu IMC …: { gv_racquel } - Sobrepeso|.
+       op_texto = |Seu IMC √â: { gv_racquel } - Sobrepeso|.
 
       ELSEIF gv_racquel > gv_sobre AND gv_racquel <= gv_graui.
-       op_texto = |Seu IMC …: { gv_racquel } - Obesidade grau I|.
+       op_texto = |Seu IMC √â: { gv_racquel } - Obesidade grau I|.
 
 
       ELSEIF gv_racquel > gv_graui AND gv_racquel <= gv_grauii.
-        op_texto = |Seu IMC …: { gv_racquel } - Obesidade grau II|.
+        op_texto = |Seu IMC √â: { gv_racquel } - Obesidade grau II|.
 
       ELSEIF gv_racquel > gv_grauiii.
-        op_texto = |Seu IMC …: { gv_racquel } - Obesidade grau III|.
+        op_texto = |Seu IMC √â: { gv_racquel } - Obesidade grau III|.
     ENDIF.
 
-"usei a vari·vel op_texto em todos os resultatos, logo, repeti ela 6x. Como usei a condicional IF, n„o teve problema repetir ela em resultados diferentes, mas ficou -feio-,
- " acredito que tenha uma forma mais compacta de fazer o que fiz com menos cÛdigo. Se puderem me auxiliar e escrever aqui mesmo, ajudaria muito."
-** Raquel.. achei seu cÛdigo OK... n„o vi problemas no uso do ELSEIF... como eu disse, isso È muito pessoal de cada programador.
-** Voce na verdade reusou cÛdigo... isso È louv·vel na verdade porque o cÛdigo fica mais limpo e conciso.
-** sobre as vari·veis... tambÈm esta correto... mas ali o correto seria declar·-las como constantes... vari·veis entendemos que pode ter qualquer valor.
  IF p_tela = 'X'.
       WRITE: op_texto.
     ELSEIF p_mes = 'X'.
@@ -72,7 +67,7 @@ START-OF-SELECTION.
     ENDIF.
 
  ELSE.
-    WRITE: 'Informe sua altura e peso para o c·lculo de IMC.'.
+    WRITE: 'Informe sua altura e peso para o c√°lculo de IMC.'.
  ENDIF.
 
 FORM calcula_imc .
