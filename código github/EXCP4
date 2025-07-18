@@ -1,53 +1,52 @@
-*** Empresa: SPRO
-*** Id: ALUNO025
+
 *** Programa: ZREPO_EXCP4_ALUNO025
-*** DescriÁ„o: REPORT PARA CRIA«√O DE DOCUMENTO
+*** Descri√ß√£o: REPORT PARA CRIA√á√ÉO DE DOCUMENTO
 *** Autor: Racquel Marques Lara de Almeida
 *** Data: 23/05/2025
 
 
 REPORT ZREPO_EXCP4_ALUNO025.
 
-"-Tela de seleÁ„o: informe o pedido e a empresa!
+"-Tela de sele√ß√£o: informe o pedido e a empresa!
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
 PARAMETERS: p_belnr TYPE ekko-ebeln,  " Pedido
             p_bukrs TYPE ekko-bukrs.  " Empresa
 SELECTION-SCREEN END OF BLOCK b1.
 
-"--Vari·veis principais: dados do pedido e estruturas da BAPI
-DATA: ls_ekko TYPE ekko,                          " CabeÁalho do pedido
+"--Vari√°veis principais: dados do pedido e estruturas da BAPI
+DATA: ls_ekko TYPE ekko,                          " Cabe√ßalho do pedido
       lt_ekpo  TYPE TABLE OF ekpo,                 " Itens do pedido
       ls_ekpo   TYPE ekpo,                          " Um item
-      ls_gm_code TYPE bapi2017_gm_code,             " CÛdigo da movimentaÁ„o
-      ls_gm_head TYPE bapi2017_gm_head_01,          " CabeÁalho da movimentaÁ„o
-      ls_gm_item TYPE bapi2017_gm_item_create,      " Um item da movimentaÁ„o
+      ls_gm_code TYPE bapi2017_gm_code,             " C√≥digo da movimenta√ß√£o
+      ls_gm_head TYPE bapi2017_gm_head_01,          " Cabe√ßalho da movimenta√ß√£o
+      ls_gm_item TYPE bapi2017_gm_item_create,      " Um item da movimenta√ß√£o
       lt_gm_item TYPE TABLE OF bapi2017_gm_item_create, " Todos os itens para a BAPI
-      ls_headret TYPE bapi2017_gm_head_ret,         " Retorno do cabeÁalho
+      ls_headret TYPE bapi2017_gm_head_ret,         " Retorno do cabe√ßalho
       lt_return TYPE TABLE OF bapiret2.            " Mensagens da BAPI
 
 "--- Bora processar!
 START-OF-SELECTION.
-  PERFORM validar_entrada.         "  Valida se os par‚metros foram informados
-  PERFORM selecionar_ekko.         "  Busca o cabeÁalho do pedido
+  PERFORM validar_entrada.         "  Valida se os par√¢metros foram informados
+  PERFORM selecionar_ekko.         "  Busca o cabe√ßalho do pedido
   PERFORM selecionar_ekpo.         "  Bsca os itens do pedido
   PERFORM preparar_bapi.           " Prepara as estruturas para a BAPI
-  PERFORM chamar_bapi.             "  Chama a BAPI para criar movimentaÁ„o
+  PERFORM chamar_bapi.             "  Chama a BAPI para criar movimenta√ß√£o
   PERFORM validar_retorno_bapi.    "  Mostra o resultado
 
-"Checa se os par‚metros foram informados
+"Checa se os par√¢metros foram informados
 FORM validar_entrada.
   IF p_bukrs IS INITIAL OR p_belnr IS INITIAL.
-    MESSAGE 'Par‚metros obrigatÛrios n„o preenchidos.' TYPE 'I' DISPLAY LIKE 'E'.
-    STOP. " Sem par‚metros, sem negÛcio!
+    MESSAGE 'Par√¢metros obrigat√≥rios n√£o preenchidos.' TYPE 'I' DISPLAY LIKE 'E'.
+    STOP. " Sem par√¢metros, sem neg√≥cio!
   ENDIF.
 ENDFORM.
 
-"-Busca o cabeÁalho do pedido
+"-Busca o cabe√ßalho do pedido
 FORM selecionar_ekko.
   SELECT SINGLE * INTO ls_ekko FROM ekko
     WHERE bukrs = p_bukrs AND ebeln = p_belnr.
   IF sy-subrc <> 0.
-    MESSAGE 'Pedido n„o encontrado.' TYPE 'E'.
+    MESSAGE 'Pedido n√£o encontrado.' TYPE 'E'.
   ENDIF.
 ENDFORM.
 
@@ -55,15 +54,15 @@ ENDFORM.
 FORM selecionar_ekpo.
   SELECT * INTO TABLE lt_ekpo FROM ekpo WHERE ebeln = ls_ekko-ebeln.
   IF lt_ekpo IS INITIAL.
-    MESSAGE 'N„o h· itens para o pedido informado.' TYPE 'E'.
+    MESSAGE 'N√£o h√° itens para o pedido informado.' TYPE 'E'.
   ENDIF.
 ENDFORM.
 
-"-- Prepara cada item para a movimentaÁ„o
+"-- Prepara cada item para a movimenta√ß√£o
 FORM preparar_bapi.
-  ls_gm_code-gm_code = '01'.           " CÛdigo: 01 = entrada de mercadoria
+  ls_gm_code-gm_code = '01'.           " C√≥digo: 01 = entrada de mercadoria
   ls_gm_head-doc_date = sy-datum.      " Data do documento: hoje
-  ls_gm_head-pstng_date = sy-datum.    " Data de lanÁamento: hoje
+  ls_gm_head-pstng_date = sy-datum.    " Data de lan√ßamento: hoje
 
   LOOP AT lt_ekpo INTO ls_ekpo.
     CLEAR ls_gm_item.
@@ -71,7 +70,7 @@ FORM preparar_bapi.
     ls_gm_item-material   = ls_ekpo-matnr.
     ls_gm_item-plant      = ls_ekpo-werks.
     ls_gm_item-stge_loc   = ls_ekpo-lgort.
-    ls_gm_item-move_type  = '101'.          " Entrada padr„o
+    ls_gm_item-move_type  = '101'.          " Entrada padr√£o
     ls_gm_item-vendor     = ls_ekko-lifnr.
     ls_gm_item-entry_qnt  = ls_ekpo-menge.
     ls_gm_item-entry_uom  = ls_ekpo-meins.
@@ -84,7 +83,7 @@ FORM preparar_bapi.
   ENDLOOP.
 ENDFORM.
 
-" Chama a BAPI para criar a movimentaÁ„o
+" Chama a BAPI para criar a movimenta√ß√£o
 FORM chamar_bapi.
   CALL FUNCTION 'BAPI_GOODSMVT_CREATE'
     EXPORTING
@@ -97,7 +96,7 @@ FORM chamar_bapi.
       return        = lt_return.
 ENDFORM.
 
-"--- Analisa o retorno e informa o usu·rio
+"--- Analisa o retorno e informa o usu√°rio
 FORM validar_retorno_bapi.
   DATA ls_return TYPE bapiret2.
 
@@ -107,6 +106,6 @@ FORM validar_retorno_bapi.
   ELSEIF ls_headret-mat_doc IS NOT INITIAL.
     MESSAGE |Documento criado: { ls_headret-mat_doc }| TYPE 'I' DISPLAY LIKE 'S'. "  Sucesso!
   ELSE.
-    MESSAGE 'Nenhuma movimentaÁ„o realizada e sem erro retornado.' TYPE 'I' DISPLAY LIKE 'E'. " SituaÁ„o indefinida
+    MESSAGE 'Nenhuma movimenta√ß√£o realizada e sem erro retornado.' TYPE 'I' DISPLAY LIKE 'E'. " Situa√ß√£o indefinida
   ENDIF.
 ENDFORM.
