@@ -1,15 +1,10 @@
 * Empresa: SPRO
 * Id: ALUNO025
 * Programa: ZREPO_EXCP5_ALUNO025
-* Descrição: Relatório para extração e exibição de pedidos de compras via ALV com opção de inserção e visualização
+* DescriÃ§Ã£o: RelatÃ³rio para extraÃ§Ã£o e exibiÃ§Ã£o de pedidos de compras via ALV com opÃ§Ã£o de inserÃ§Ã£o e visualizaÃ§Ã£o
 * Autor: Racquel Marques Lara de Almeida
 * Data: 30/05/2025
 
-* Não consegui criar a classe como queria e foi ensinado, tentei bastante, adicionei a tabela no método como foi explicado, tipo exporting e referenciando a tabela ztbmm_aluno025, mas devo ter errado em algo (certeza)
-* A solução que encontrei foi escrever manualmente a classe aqui no código. Acabei utilizando o form de mostrar dados e coloquei 2 métodos na classe, que seria o de relatório alv e o cl_gui_alv_grid
-* o cl_gui_alv_grid foi o maior desafio, pois tive que criar tela, mexer com container, e deu muitos erros até perceber que escrevi a palavra errada para o container no layout da tela, o que fez com
-* que o código não conseguisse puxar e não mostrava nada quando selecionada a opção de mostrar por classe alv. Fiquei horas nisso, mas no fim troquei a palavra e consegui. Espero que esteja ok. Se puderem
-* comentar por aqui para me auxiliar nas melhorias, agradeço. Obrigada.
 
 
 REPORT ZREPO_EXCP5_ALUNO025.
