@@ -1,13 +1,11 @@
-* Empresa: SPRO
-* Id: ALUNO025
 * Programa: ZREPO_EXCPF_ALUNO025
-* DescriÁ„o: Report de NF
+* Descri√ß√£o: Report de NF
 * Autor: Racquel Marques Lara de Almeida
 * Data: 03/05/2025
 
 REPORT ZREPO_EXCPF_ALUNO025.
 
-CLASS lcl_util DEFINITION LOAD. "pra ter certeza que a classe vai ser carregada no inÌcio
+CLASS lcl_util DEFINITION LOAD. "pra ter certeza que a classe vai ser carregada no in√≠cio
 
 TABLES: ZTBSD_ALUNO025, J_1BNFDOC. "tabela usadas pro report
 
@@ -28,41 +26,41 @@ TYPES: BEGIN OF ty_dados,
          hora_job      TYPE ZTBSD_ALUNO025-hora_job,
        END OF ty_dados.
 
-DATA: lt_indados TYPE TABLE OF j_1bnfdoc,    "vari·vel para tabela interna do tipo j_1bnfdoc
-      ls_indados TYPE j_1bnfdoc.             "vari·vel estrutura para ler cada linha com os mesmos campos da j_1bnfdoc
+DATA: lt_indados TYPE TABLE OF j_1bnfdoc,    "vari√°vel para tabela interna do tipo j_1bnfdoc
+      ls_indados TYPE j_1bnfdoc.             "vari√°vel estrutura para ler cada linha com os mesmos campos da j_1bnfdoc
 
 DATA: wk_header     TYPE j_1bnfdoc,
-      wk_partner    TYPE STANDARD TABLE OF j_1bnfnad   WITH EMPTY KEY, "aqui foram declarados vari·veis pra J_1B_NF_DOCUMENT_READ funcionar
+      wk_partner    TYPE STANDARD TABLE OF j_1bnfnad   WITH EMPTY KEY, "aqui foram declarados vari√°veis pra J_1B_NF_DOCUMENT_READ funcionar
       wk_item       TYPE STANDARD TABLE OF j_1bnflin   WITH EMPTY KEY,
       wk_item_tax   TYPE STANDARD TABLE OF j_1bnfstx   WITH EMPTY KEY,
       wk_header_msg TYPE STANDARD TABLE OF j_1bnfftx   WITH EMPTY KEY,
       wk_refer_msg  TYPE STANDARD TABLE OF j_1bnfref   WITH EMPTY KEY.
 
 
-DATA OK_CODE LIKE SY-UCOMM. "cÛdigo de comando para os botıes que aparecerem na tela 0100
+DATA OK_CODE LIKE SY-UCOMM. "c√≥digo de comando para os bot√µes que aparecerem na tela 0100
 
 DATA: g_custom_container TYPE REF TO cl_gui_custom_container, "objetos pra poder chamar o container e a tela funcionar
       g_grid             TYPE REF TO cl_gui_alv_grid.
 
 
-DATA: gt_dados TYPE TABLE OF ty_dados, "Tabela e estrutura com dados que ser„o exibidos no ALV
+DATA: gt_dados TYPE TABLE OF ty_dados, "Tabela e estrutura com dados que ser√£o exibidos no ALV
       gs_dados TYPE ty_dados.
 
 DATA: ls_dados TYPE ty_dados. "estrutura de auxilio pra preencher linha
 
 DATA: lv_count_insert TYPE i VALUE 0. "Contador de registros inseridos na tabela Z, ajuda a saber quantos foram inseridos
-                                      " se n„o tiver, mostra mensagem de sucesso mesmo sem inserir nada
+                                      " se n√£o tiver, mostra mensagem de sucesso mesmo sem inserir nada
 
 CLASS lcl_util DEFINITION. "Utilizar pelo menos uma classe para modularizar o report (pode ser local ou globaL).
   PUBLIC SECTION.
     CLASS-METHODS:
-                   mostrar_dados_clo. "mÈtodo pra chamar a tela ALV
+                   mostrar_dados_clo. "m√©todo pra chamar a tela ALV
 ENDCLASS.
 
 CLASS lcl_util IMPLEMENTATION.
 
   METHOD mostrar_dados_clo.
-     CALL SCREEN 0100.   "a prÛpria chamada em si
+     CALL SCREEN 0100.   "a pr√≥pria chamada em si
   ENDMETHOD.
  ENDCLASS.
 
@@ -87,11 +85,11 @@ START-OF-SELECTION.
   IF p_ins = 'X'. "caso inserir esteja selecionado, executa o que vem a seguir
 
     IF s_docnum[] IS INITIAL.
-     MESSAGE i000(ZMSG_ALUNO025). "essa parte garante e valida que o n∫ de documento precisa estar preenchido para poder inserir
+     MESSAGE i000(ZMSG_ALUNO025). "essa parte garante e valida que o n¬∫ de documento precisa estar preenchido para poder inserir
      STOP.
     ENDIF.
 
-    SELECT *  "lÍ as NF ativas (nao canceladas e que tenham base nos filtros informados)
+    SELECT *  "l√™ as NF ativas (nao canceladas e que tenham base nos filtros informados)
     FROM j_1bnfdoc
     WHERE cancel IS INITIAL
       AND fatura = 'X'
@@ -137,7 +135,7 @@ IMPORTING
 
         LOOP AT wk_item INTO DATA(ls_item). "pra cada item da nf vai montar um registro com os dados e gravar na tabela z
       CLEAR ls_dados.
-"preenche o campos da estrutura de saÌda
+"preenche o campos da estrutura de sa√≠da
       ls_dados-mandt         = sy-mandt.
       ls_dados-docnum       = ls_indados-docnum.
       ls_dados-itmnum       = ls_item-itmnum.
@@ -150,13 +148,13 @@ IMPORTING
       ls_dados-netwr        = ls_item-netwr.
       ls_dados-data_leitura = sy-datum.
 
-   IF sy-batch = 'X'.                 "execuÁ„o em background
+   IF sy-batch = 'X'.                 "execu√ß√£o em background
       ls_dados-data_job = sy-datum.
       ls_dados-hora_job = sy-uzeit.
    ENDIF.
 
 
-SELECT SINGLE * FROM ZTBSD_ALUNO025 INTO @data(lv_conf) "verificaÁ„o de existÍncia com variavel declarada localmente pra evitar duplicidade
+SELECT SINGLE * FROM ZTBSD_ALUNO025 INTO @data(lv_conf) "verifica√ß√£o de exist√™ncia com variavel declarada localmente pra evitar duplicidade
    WHERE docnum = @ls_dados-docnum
     AND itmnum = @ls_dados-itmnum.
 
@@ -175,15 +173,15 @@ SELECT SINGLE * FROM ZTBSD_ALUNO025 INTO @data(lv_conf) "verificaÁ„o de existÍnc
 
  ENDLOOP.
 
- IF lv_count_insert > 0. "se houver inserÁ„o de dados, grava
-COMMIT WORK. "confirmaÁ„o
+ IF lv_count_insert > 0. "se houver inser√ß√£o de dados, grava
+COMMIT WORK. "confirma√ß√£o
  MESSAGE s005(ZMSG_ALUNO025). "msg sucesso
  ELSE.
      MESSAGE i009(ZMSG_ALUNO025). "informa que nada foi inserido
  ENDIF.
 ENDIF.
 
-IF p_del = 'X'. "deleta os registro se essa opÁ„o estiver selecionada
+IF p_del = 'X'. "deleta os registro se essa op√ß√£o estiver selecionada
 
   DELETE FROM ZTBSD_ALUNO025 WHERE docnum IN @s_docnum.
 
@@ -194,7 +192,7 @@ IF p_del = 'X'. "deleta os registro se essa opÁ„o estiver selecionada
   ENDIF.
 ENDIF.
 
-IF p_vis = 'X' AND p_ins IS INITIAL AND p_del IS INITIAL. "visualizaÁ„o
+IF p_vis = 'X' AND p_ins IS INITIAL AND p_del IS INITIAL. "visualiza√ß√£o
   SELECT *
     FROM ztbsd_aluno025
     WHERE docnum IN @s_docnum
@@ -242,9 +240,9 @@ CALL METHOD g_grid->set_table_for_first_display
 
 ENDMODULE.
 
-MODULE user_command_0100 INPUT. "ñ Incluir no status da tela pelo menos 3 botıes de navegaÁ„o: BACK, CANC e EXIT.
-  CASE OK_CODE.                 " Quando o usu·rio apertar o bot„o BACK ou CANC, o app deve retornar a tela inicial.
-    WHEN 'EXIT'.                " Caso o usu·rio apertar EXIT o programa deve ser encerrado.
+MODULE user_command_0100 INPUT. "‚Äì Incluir no status da tela pelo menos 3 bot√µes de navega√ß√£o: BACK, CANC e EXIT.
+  CASE OK_CODE.                 " Quando o usu√°rio apertar o bot√£o BACK ou CANC, o app deve retornar a tela inicial.
+    WHEN 'EXIT'.                " Caso o usu√°rio apertar EXIT o programa deve ser encerrado.
       Leave PROGRAM.
     when 'BACK' OR 'CANC'.
       LEAVE TO SCREEN 0.
