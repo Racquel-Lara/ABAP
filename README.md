@@ -58,8 +58,8 @@ Este repositório contém diversos relatórios ABAP desenvolvidos durante o curs
 ## 🧠 Autor
 - **Nome:** Racquel Marques Lara de Almeida  
 - **ID:** ALUNO025  
-- **Contato:** racquellara.nutri@gmail.com  
-- **Empresa:** SPRO  
+- **Contato:** racquellara.dev@gmail.com  
+  
 
 ## 🗓️ Datas dos Relatórios
 | Arquivo  | Data       |
