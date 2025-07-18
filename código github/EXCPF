@@ -1,0 +1,252 @@
+* Empresa: SPRO
+* Id: ALUNO025
+* Programa: ZREPO_EXCPF_ALUNO025
+* Descrição: Report de NF
+* Autor: Racquel Marques Lara de Almeida
+* Data: 03/05/2025
+
+REPORT ZREPO_EXCPF_ALUNO025.
+
+CLASS lcl_util DEFINITION LOAD. "pra ter certeza que a classe vai ser carregada no início
+
+TABLES: ZTBSD_ALUNO025, J_1BNFDOC. "tabela usadas pro report
+
+*aqui eu declarei todos os campos da tabela dentro do types - defini a estrutura ty_dados
+TYPES: BEGIN OF ty_dados,
+         mandt         TYPE ZTBSD_ALUNO025-mandt,
+         docnum        TYPE ZTBSD_ALUNO025-docnum,
+         itmnum        TYPE ZTBSD_ALUNO025-itmnum,
+         matnr         TYPE ZTBSD_ALUNO025-matnr,
+         bwkey         TYPE ZTBSD_ALUNO025-bwkey,
+         charg         TYPE ZTBSD_ALUNO025-charg,
+         matkl         TYPE ZTBSD_ALUNO025-matkl,
+         maktx         TYPE ZTBSD_ALUNO025-maktx,
+         netpr         TYPE ZTBSD_ALUNO025-netpr,
+         netwr         TYPE ZTBSD_ALUNO025-netwr,
+         data_leitura  TYPE ZTBSD_ALUNO025-data_leitura,
+         data_job      TYPE ZTBSD_ALUNO025-data_job,
+         hora_job      TYPE ZTBSD_ALUNO025-hora_job,
+       END OF ty_dados.
+
+DATA: lt_indados TYPE TABLE OF j_1bnfdoc,    "variável para tabela interna do tipo j_1bnfdoc
+      ls_indados TYPE j_1bnfdoc.             "variável estrutura para ler cada linha com os mesmos campos da j_1bnfdoc
+
+DATA: wk_header     TYPE j_1bnfdoc,
+      wk_partner    TYPE STANDARD TABLE OF j_1bnfnad   WITH EMPTY KEY, "aqui foram declarados variáveis pra J_1B_NF_DOCUMENT_READ funcionar
+      wk_item       TYPE STANDARD TABLE OF j_1bnflin   WITH EMPTY KEY,
+      wk_item_tax   TYPE STANDARD TABLE OF j_1bnfstx   WITH EMPTY KEY,
+      wk_header_msg TYPE STANDARD TABLE OF j_1bnfftx   WITH EMPTY KEY,
+      wk_refer_msg  TYPE STANDARD TABLE OF j_1bnfref   WITH EMPTY KEY.
+
+
+DATA OK_CODE LIKE SY-UCOMM. "código de comando para os botões que aparecerem na tela 0100
+
+DATA: g_custom_container TYPE REF TO cl_gui_custom_container, "objetos pra poder chamar o container e a tela funcionar
+      g_grid             TYPE REF TO cl_gui_alv_grid.
+
+
+DATA: gt_dados TYPE TABLE OF ty_dados, "Tabela e estrutura com dados que serão exibidos no ALV
+      gs_dados TYPE ty_dados.
+
+DATA: ls_dados TYPE ty_dados. "estrutura de auxilio pra preencher linha
+
+DATA: lv_count_insert TYPE i VALUE 0. "Contador de registros inseridos na tabela Z, ajuda a saber quantos foram inseridos
+                                      " se não tiver, mostra mensagem de sucesso mesmo sem inserir nada
+
+CLASS lcl_util DEFINITION. "Utilizar pelo menos uma classe para modularizar o report (pode ser local ou globaL).
+  PUBLIC SECTION.
+    CLASS-METHODS:
+                   mostrar_dados_clo. "método pra chamar a tela ALV
+ENDCLASS.
+
+CLASS lcl_util IMPLEMENTATION.
+
+  METHOD mostrar_dados_clo.
+     CALL SCREEN 0100.   "a própria chamada em si
+  ENDMETHOD.
+ ENDCLASS.
+
+
+SELECTION-SCREEN BEGIN OF BLOCK 01 WITH FRAME TITLE TEXT-001.
+  SELECT-OPTIONS: s_docnum FOR ZTBSD_ALUNO025-docnum. "range para informar a quantidade de doc
+
+  SELECTION-SCREEN SKIP 1.
+
+SELECTION-SCREEN BEGIN OF BLOCK 02 WITH FRAME TITLE text-002.
+
+  PARAMETERS: p_ins  RADIOBUTTON GROUP grp1 DEFAULT 'X', "insere
+              p_vis  RADIOBUTTON GROUP grp1,            "visualiza
+              p_del  RADIOBUTTON GROUP grp1.            "deleta
+SELECTION-SCREEN END OF BLOCK 02.
+SELECTION-SCREEN END OF BLOCK 01.
+
+
+START-OF-SELECTION.
+
+
+  IF p_ins = 'X'. "caso inserir esteja selecionado, executa o que vem a seguir
+
+    IF s_docnum[] IS INITIAL.
+     MESSAGE i000(ZMSG_ALUNO025). "essa parte garante e valida que o nº de documento precisa estar preenchido para poder inserir
+     STOP.
+    ENDIF.
+
+    SELECT *  "lê as NF ativas (nao canceladas e que tenham base nos filtros informados)
+    FROM j_1bnfdoc
+    WHERE cancel IS INITIAL
+      AND fatura = 'X'
+      AND partyp = 'C'
+      AND nftype = 'ZA'
+      AND docnum IN @s_docnum
+      INTO TABLE @lt_indados.
+
+IF sy-subrc <> 0.
+    MESSAGE i003(ZMSG_ALUNO025). "registro nao foi encontrado
+    RETURN. "LEAVE TO SCREEN 0
+ENDIF.
+
+
+  LOOP AT lt_indados INTO ls_indados. "faz um loop na tabela e colocar na estrutura
+
+CLEAR: wk_partner[], "limpa pra evitar mistura de dados
+       wk_item[],
+       wk_item_tax[],
+       wk_header_msg[],
+       wk_refer_msg[].
+
+CALL FUNCTION 'J_1B_NF_DOCUMENT_READ' "leitura da nf e preenchimento dos dados nas estruturas wk
+  EXPORTING
+    doc_number        = ls_indados-docnum
+IMPORTING
+    doc_header        = wk_header
+  TABLES
+    doc_partner       = wk_partner
+    doc_item          = wk_item
+    doc_item_tax      = wk_item_tax
+    doc_header_msg    = wk_header_msg
+    doc_refer_msg     = wk_refer_msg
+  EXCEPTIONS
+    document_not_found = 1
+    docum_lock         = 2
+    OTHERS             = 3.
+
+     IF sy-subrc <> 0.
+        MESSAGE e001(ZMSG_ALUNO025). "se nao conseguir ler a nf, exibe erro
+         CONTINUE.
+     ENDIF.
+
+        LOOP AT wk_item INTO DATA(ls_item). "pra cada item da nf vai montar um registro com os dados e gravar na tabela z
+      CLEAR ls_dados.
+"preenche o campos da estrutura de saída
+      ls_dados-mandt         = sy-mandt.
+      ls_dados-docnum       = ls_indados-docnum.
+      ls_dados-itmnum       = ls_item-itmnum.
+      ls_dados-matnr        = ls_item-matnr.
+      ls_dados-bwkey        = ls_item-bwkey.
+      ls_dados-charg        = ls_item-charg.
+      ls_dados-matkl        = ls_item-matkl.
+      ls_dados-maktx        = ls_item-maktx.
+      ls_dados-netpr        = ls_item-netpr.
+      ls_dados-netwr        = ls_item-netwr.
+      ls_dados-data_leitura = sy-datum.
+
+   IF sy-batch = 'X'.                 "execução em background
+      ls_dados-data_job = sy-datum.
+      ls_dados-hora_job = sy-uzeit.
+   ENDIF.
+
+
+SELECT SINGLE * FROM ZTBSD_ALUNO025 INTO @data(lv_conf) "verificação de existência com variavel declarada localmente pra evitar duplicidade
+   WHERE docnum = @ls_dados-docnum
+    AND itmnum = @ls_dados-itmnum.
+
+ IF sy-subrc = 0.
+  CONTINUE.
+ ENDIF.
+
+      MODIFY ZTBSD_ALUNO025 FROM ls_dados. "modify pra inserir um novo registro
+
+      IF sy-subrc <> 0.
+        MESSAGE e004(ZMSG_ALUNO025).
+        ELSE.
+          lv_count_insert = lv_count_insert + 1.
+      ENDIF.
+    ENDLOOP.
+
+ ENDLOOP.
+
+ IF lv_count_insert > 0. "se houver inserção de dados, grava
+COMMIT WORK. "confirmação
+ MESSAGE s005(ZMSG_ALUNO025). "msg sucesso
+ ELSE.
+     MESSAGE i009(ZMSG_ALUNO025). "informa que nada foi inserido
+ ENDIF.
+ENDIF.
+
+IF p_del = 'X'. "deleta os registro se essa opção estiver selecionada
+
+  DELETE FROM ZTBSD_ALUNO025 WHERE docnum IN @s_docnum.
+
+  IF sy-subrc = 0.
+    MESSAGE s007(ZMSG_ALUNO025). "msg sucesso
+  ELSE.
+    MESSAGE s008(ZMSG_ALUNO025). "informa que nenhum registro foi encontrado pra deletar
+  ENDIF.
+ENDIF.
+
+IF p_vis = 'X' AND p_ins IS INITIAL AND p_del IS INITIAL. "visualização
+  SELECT *
+    FROM ztbsd_aluno025
+    WHERE docnum IN @s_docnum
+    INTO TABLE @gt_dados.
+
+  IF sy-subrc <> 0 OR gt_dados IS INITIAL.
+    MESSAGE i006(ZMSG_ALUNO025).
+    CLEAR gt_dados.
+    RETURN.
+  ENDIF.
+
+  lcl_util=>mostrar_dados_clo( ). "mostra a tela
+ENDIF.
+
+
+
+MODULE status_0100 OUTPUT. "Gerar o ALV utilizando a classe CL_ALV_GUID.
+  DATA: lt_fcat   TYPE lvc_t_fcat,
+        ls_layout TYPE lvc_s_layo.
+
+  IF g_custom_container IS INITIAL.
+    CREATE OBJECT g_custom_container
+      EXPORTING
+        container_name = 'ALVGRID2'.
+
+    CREATE OBJECT g_grid
+      EXPORTING
+        i_parent = g_custom_container.
+ ENDIF.
+
+    ls_layout-zebra = 'X'.
+
+CALL FUNCTION 'LVC_FIELDCATALOG_MERGE'
+  EXPORTING
+    i_structure_name = 'ZTBSD_ALUNO025'
+  CHANGING
+    ct_fieldcat      = lt_fcat.
+
+CALL METHOD g_grid->set_table_for_first_display
+  EXPORTING
+    is_layout        = ls_layout
+  CHANGING
+    it_outtab        = gt_dados
+    it_fieldcatalog  = lt_fcat.
+
+ENDMODULE.
+
+MODULE user_command_0100 INPUT. "– Incluir no status da tela pelo menos 3 botões de navegação: BACK, CANC e EXIT.
+  CASE OK_CODE.                 " Quando o usuário apertar o botão BACK ou CANC, o app deve retornar a tela inicial.
+    WHEN 'EXIT'.                " Caso o usuário apertar EXIT o programa deve ser encerrado.
+      Leave PROGRAM.
+    when 'BACK' OR 'CANC'.
+      LEAVE TO SCREEN 0.
+  ENDCASE.
+ENDMODULE.
