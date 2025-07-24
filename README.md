@@ -55,6 +55,12 @@ Este repositório contém diversos relatórios ABAP desenvolvidos durante o curs
 
 ---
 
+### 'VOOS'
+> **Título:** Relatório de Voos com Datas Formatadas
+> **Descrição:** Consulta com INNER JOIN entre as tabelas /dmo/flight, /dmo/connection e /dmo/airport, exibindo os voos disponíveis com aeroportos de origem e destino, assentos disponíveis e data do voo formatada como DD-> MM-AAAA. A lógica de formatação da data é realizada manualmente com slicing de string sobre o campo do tipo DATE.
+
+---
+
 ## 🧠 Autor
 - **Nome:** Racquel Marques Lara de Almeida  
 - **ID:** ALUNO025  
