@@ -62,8 +62,7 @@ Este repositório contém diversos relatórios ABAP desenvolvidos durante o curs
 ---
 
 ## 🧠 Autor
-- **Nome:** Racquel Marques Lara de Almeida  
-- **ID:** ALUNO025  
+- **Nome:** Racquel Marques Lara de Almeida   
 - **Contato:** racquellara.dev@gmail.com  
   
 
