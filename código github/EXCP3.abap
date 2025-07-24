@@ -1,13 +1,12 @@
-*Empresa: SPRO
-*Autor: Racquel Marques Lara de Almeida
-*Aluno: 025
-*Data: 22/05/2025
-*DescriÁ„o: aula pr·tica, armazenamento de dados na tabela ztbmm_aluno025
-*Contato: racquellara.nutri@gmail.com
-*TransaÁ„o: ZEXCP3_025
 
-"N„o consegui fazer com que depois que o programa seja executado, ao inserir informaÁıes, caso n„o encontre, ao apertar f3(voltar)
-"o programa n„o volta para a tela de seleÁ„o para que o usu·rio preencha os dados novamente, e sim sai do programa (fecha). =(
+*Autor: Racquel Marques Lara de Almeida
+*Data: 22/05/2025
+*Descri√ß√£o: aula pr√°tica, armazenamento de dados na tabela ztbmm_aluno025
+*Contato: racquellara.nutri@gmail.com
+*Transa√ß√£o: ZEXCP3_025
+
+"N√£o consegui fazer com que depois que o programa seja executado, ao inserir informa√ß√µes, caso n√£o encontre, ao apertar f3(voltar)
+"o programa n√£o volta para a tela de sele√ß√£o para que o usu√°rio preencha os dados novamente, e sim sai do programa (fecha). =(
 
 REPORT ZREPO_EXCP3_ALUNO025.
 
